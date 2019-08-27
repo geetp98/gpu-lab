@@ -15,8 +15,9 @@ for row in data:
 
 size = np.log2(size)
 
-fig = plt.plot(size, performance)
+fig = plt.plot(size, performance, color='black', marker='o')
 plt.title("Performane vs log(arr size)")
 plt.xlabel("log(arr size)")
 plt.ylabel("Performance")
+plt.grid(True)
 plt.show()

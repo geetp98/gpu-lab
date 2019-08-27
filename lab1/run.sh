@@ -1,6 +1,6 @@
 echo "basic cleanup.."
-rm output
-rm vector_triad
+# rm output
+# rm vector_triad
 gcc vector_triad_arr.c -o vector_triad
 echo "vector_triad_arr.c compiled.."
 ./vector_triad
