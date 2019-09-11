@@ -1,2 +1,15 @@
 .DS_Store
 /lab1/Performancevslog(arrsize).png
+/lab2/outputs/device.txt
+/lab2/outputs/performances/out_parallel_add
+/lab2/outputs/performances/out_parallel_sqr
+/lab2/outputs/performances/out_serial_add
+/lab2/outputs/performances/out_serial_sqr
+/lab2/outputs/profile/serial_vector_add_profile
+/lab2/outputs/profile/serial_vector_square_profile
+/lab2/add_su.py
+/lab2/add_thr.py
+/lab2/add_time.py
+/lab2/sqr_su.py
+/lab2/sqr_thr.py
+/lab2/sqr_time.py
