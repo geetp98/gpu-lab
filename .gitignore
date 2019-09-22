@@ -1,8 +1,2 @@
 .DS_Store
-/lab2/add_su.py
-/lab2/add_thr.py
-/lab2/add_time.py
-/lab2/sqr_su.py
-/lab2/sqr_thr.py
-/lab2/sqr_time.py
-/lab2/outputs
+/lab2/plot-codes
