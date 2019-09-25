@@ -18,7 +18,6 @@ typedef struct
 
 __global__ void colCon(unsigned char *greyImg, unsigned char *rgbImage, int width, int height)
 {
-	//@@ Insert code to implement matrix multiplication here
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
 	int Offset = y * width + x;
@@ -30,19 +29,6 @@ __global__ void colCon(unsigned char *greyImg, unsigned char *rgbImage, int widt
 		greyImg[CHANNELS * Offset + 2] = sum;
 	}
 }
-
-// __global__ void parallelGray(PPMPixel *A_data, PPMPixel *B_data, int numARows, int numAColumns)
-// {
-// 	int y = blockDim.y * blockIdx.y + threadIdx.y;
-// 	int x = blockDim.x * blockIdx.x + threadIdx.x;
-
-// 	if ((x < numARows) && (y < numAColumns))
-// 	{
-// 		B_data[(x * numARows) + y].red = A_data[(x * numARows) + y].red * 0.21 + A_data[(x * numARows) + y].green * 0.71 + A_data[(x * numARows) + y].blue * 0.07;
-// 		B_data[(x * numARows) + y].green = A_data[(x * numARows) + y].red * 0.21 + A_data[(x * numARows) + y].green * 0.71 + A_data[(x * numARows) + y].blue * 0.07;
-// 		B_data[(x * numARows) + y].blue = A_data[(x * numARows) + y].red * 0.21 + A_data[(x * numARows) + y].green * 0.71 + A_data[(x * numARows) + y].blue * 0.07;
-// 	}
-// }
 
 static PPMImage *readPPM(const char *filename)
 {
@@ -163,10 +149,9 @@ void writePPM(const char *filename, PPMImage *img)
 
 int main(int argc, char **argv)
 {
-
-	PPMImage *image, *image1;
+	PPMImage *image, *image_device;
 	unsigned char *grey, *rgb;
-	int bytes;
+	int size_of_image;
 	float elapsed;
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
@@ -178,15 +163,15 @@ int main(int argc, char **argv)
 		for (int i = 1; i < argc; i++)
 		{
 			image = readPPM(argv[i]);
-			image1 = (PPMImage *)malloc(sizeof(PPMImage));
-			image1->x = image->x;
-			image1->y = image->y;
-			bytes = 3 * image->x * image->y;
-			image1->data = (unsigned char *)malloc(bytes);
+			image_device = (PPMImage *)malloc(sizeof(PPMImage));
+			image_device->x = image->x;
+			image_device->y = image->y;
+			size_of_image = 3 * image->x * image->y;
+			image_device->data = (unsigned char *)malloc(size_of_image);
 			printf("%d %d ", image->x, image->y);
-			cudaMalloc(&rgb, bytes * sizeof(char));
-			cudaMalloc(&grey, bytes * sizeof(char));
-			cudaMemcpy(rgb, image->data, bytes, cudaMemcpyHostToDevice);
+			cudaMalloc(&rgb, size_of_image * sizeof(char));
+			cudaMalloc(&grey, size_of_image * sizeof(char));
+			cudaMemcpy(rgb, image->data, size_of_image, cudaMemcpyHostToDevice);
 			dim3 gridSize((image->x - 1) / T + 1, (image->y - 1) / T + 1, 1);
 			dim3 blockSize(T, T, 1);
 			cudaEventRecord(start);
@@ -197,8 +182,8 @@ int main(int argc, char **argv)
 			//char *file_name = ((char) (i));
 			printf("%f ", elapsed);
 			printf("%f\n", 0.001*image->x*image->y*3*sizeof(int)/elapsed);
-			cudaMemcpy(image1->data, grey, bytes, cudaMemcpyDeviceToHost);
-			//writePPM("output_images/abc.ppm", image1);
+			cudaMemcpy(image_device->data, grey, size_of_image, cudaMemcpyDeviceToHost);
+			//writePPM("output_images/abc.ppm", image_device);
 			//printf("conversion complete\n");
 		}
 		printf("\n\n");
